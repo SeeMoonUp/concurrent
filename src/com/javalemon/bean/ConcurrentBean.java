@@ -1,7 +1,7 @@
 package com.javalemon.bean;
 
 /**
- * @author lemon(lemon @ laowantong.cc)
+ * @author lemon
  * @date 2019-06-02
  * @desc
  */

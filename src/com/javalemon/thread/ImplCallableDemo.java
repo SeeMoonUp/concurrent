@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 /**
- * @author lemon(lemon @ laowantong.cc)
+ * @author lemon
  * @date 2019-05-30
  * @desc
  */

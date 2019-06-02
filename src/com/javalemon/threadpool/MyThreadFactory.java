@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author lemon(lemon @ laowantong.cc)
+ * @author lemon
  * @date 2019-06-02
  * @desc
  */

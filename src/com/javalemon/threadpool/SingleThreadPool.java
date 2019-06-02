@@ -5,7 +5,7 @@ import com.javalemon.bean.ConcurrentBean;
 import java.util.concurrent.*;
 
 /**
- * @author lemon(lemon @ laowantong.cc)
+ * @author lemon
  * @date 2019-06-02
  * @desc
  */

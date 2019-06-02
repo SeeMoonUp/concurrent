@@ -3,7 +3,7 @@ package com.javalemon.threadpool;
 import java.util.concurrent.*;
 
 /**
- * @author lemon(lemon @ laowantong.cc)
+ * @author lemon
  * @date 2019-06-02
  * @desc
  */

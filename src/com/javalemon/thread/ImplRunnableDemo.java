@@ -1,7 +1,7 @@
 package com.javalemon.thread;
 
 /**
- * @author lemon(lemon @ laowantong.cc)
+ * @author lemon
  * @date 2019-05-30
  * @desc
  */
