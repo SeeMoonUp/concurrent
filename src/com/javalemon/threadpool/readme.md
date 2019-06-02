@@ -7,5 +7,20 @@ new ThreadPoolExecutor(nThreads, nThreads,
                               new LinkedBlockingQueue<Runnable>(),
                               threadFactory);
 ```
-
+#### 参数的含义
+1. 第一个参数corePoolSize 表示常驻核心线程数。
+如果等于0，则任务执行完之后，没有任何请求进入时销毁线程池的进程；
+如果大于0，即使本地任务执行完毕，核心线程也不会被销毁。
+这个值的设置非常关键，设置过大会浪费资源，设置过小会导致线程频繁地创建或销毁。
+2. 第二个参数：maximumPoolSize 表示线程池能够容纳同时执行的最大线程数。
+必须大于等于1，如果待执行的线程数大于此值，需要借助第5个参数的帮助，缓存在队列中。
+如果maximumPoolSize与corePoolSize相等，即是固定大小线程池。
+3. 第三个参数： keepAliveTime 表示线程池中的线程空闲时间，当空闲时间达到keepAliveTime值时，线程会被销毁，
+直到只剩下corePoolSize核心线程为止，避免浪费内存和句柄资源。
+在默认情况下，当线程池的线程数大于corePoolSize时，keepAliveTime才会起作用。
+但是当ThreadPoolExecutor的allowCoreThreadTimeOut变量设置为true时，核心线程超时后也会被回收。
+4. 第四个参数： TimeUnit表示时间单位。keepAliveTime的时间单位通常是TimeUnit.SECONDS。
+5. 第五个参数： workQueue表示缓存队列。当请求的线程数大于corePoolSize时，线程进入BlockingQueue阻塞队列。
+6. 第六个参数： threadFactory表示线程工厂。
+7. 第七个参数： handler表示执行拒绝策略的对象。
 ### 二、使用Executors创建5中线程池
