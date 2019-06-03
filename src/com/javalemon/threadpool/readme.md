@@ -24,3 +24,17 @@ new ThreadPoolExecutor(nThreads, nThreads,
 6. 第六个参数： threadFactory表示线程工厂。
 7. 第七个参数： handler表示执行拒绝策略的对象。
 ### 二、使用Executors创建5中线程池
+#### 周期线程池
+``` 
+public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
+                                                     long initialDelay,
+                                                     long delay,
+                                                     TimeUnit unit);
+```
+第一个参数 command为需要执行的命令
+第二个参数 initialDelay 为执行第一次前的延时时间
+第三个参数 delay为前一次任务执行完毕，等待多久执行下一次任务
+第四个参数 TimeUnit为第二个和第三个参数的时间单位
+特别注意：
+运行期间command抛出异常将导致整个周期线程中断，使用过程中需要特别注意这一点
+
