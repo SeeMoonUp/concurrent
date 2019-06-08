@@ -43,3 +43,32 @@ public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
 特别注意：
 运行期间command抛出异常将导致整个周期线程中断，使用过程中需要特别注意这一点
 
+### 三、ThreadPoolExecutor类中的execute() 方法
+通过submit()方法也可以提交任务，submit方法最终也是调用execute()方法
+```
+public void execute(Runnable command) {
+    if (command == null)
+        throw new NullPointerException();
+    if (poolSize >= corePoolSize || !addIfUnderCorePoolSize(command)) {
+        if (runState == RUNNING && workQueue.offer(command)) {
+            if (runState != RUNNING || poolSize == 0)
+                ensureQueuedTaskHandled(command);
+        }
+        else if (!addIfUnderMaximumPoolSize(command))
+            reject(command); // is shutdown or saturated
+    }
+}
+```
+1.如果当前线程池中的线程数目小于corePoolSize, 则每来一个任务，就会创建线程去执行这个任务
+2.如果当前线程池中的线程数据>=corePoolSize,则每来一个任务，会尝试将其添加到任务缓存队列当中，若添加成功，则该任务会等待空闲线程将其取出去执行；若添加失败（一般来说是任务缓存队列已满），则会尝试创建新的线程去执行这个任务；
+3.如果当前线程池中的线程数目达到maximumPoolSize，则会采取任务拒绝策略进行处理；
+> #### 任务拒绝策略
+>> ThreadPoolExecutor.AbortPolicy:丢弃任务并抛出RejectedExecutionException异常。
+>> ThreadPoolExecutor.DiscardPolicy：也是丢弃任务，但是不抛出异常。
+>> ThreadPoolExecutor.DiscardOldestPolicy：丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）
+>> ThreadPoolExecutor.CallerRunsPolicy：由调用线程处理该任务
+
+4.如果线程池中的线程数量大于 corePoolSize时，如果某线程空闲时间超过keepAliveTime，线程将被终止，直至线程池中的线程数目不大于corePoolSize；如果允许为核心池中的线程设置存活时间，那么核心池中的线程空闲时间超过keepAliveTime，线程也会被终止。
+
+
+
