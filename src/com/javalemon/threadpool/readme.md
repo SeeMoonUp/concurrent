@@ -28,8 +28,37 @@ LinkedBlockingQueue是单向链表，使用锁来控制入队和出队的原子�
 6. 第六个参数： threadFactory表示线程工厂。它用来生产一组相同任务的线程。线程池的命名是通过这个factory增加组名前缀来实现的。
 在虚拟机栈分析是，就可以知道线程任务是由哪个线程工厂产生的。
 7. 第七个参数： handler表示执行拒绝策略的对象。当第五个参数workQueue的任务缓存区达到上限后，并且活动线程数大于maximumPoolSize的时候，线程池通过该策略处理请求，这是一种简单的限流保护。
-### 二、使用Executors创建5中线程池
-#### 周期线程池
+### 二、使用Executors创建3种线程池的包装对象和5种线程池
+#### 3种包装对象
+1. ForkJoinPool
+2. ThreadPoolExecutor
+3. ScheduledThreadPoolExecutor
+#### 5种线程池
+1. Executors.newWorkStealingPool:
+JDK8引入的，创建持有足够线程的线程池支持给定的并行度，并通过使用多个队列减少竞争，此构造方法中把CPU数量设置为默认的并行度:
+```
+public static ExecutorService newWorkStealingPool() {
+        return new ForkJoinPool
+            (Runtime.getRuntime().availableProcessors(),
+             ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+             null, true);
+    }
+```
+2. Executors.newCachedThreadPool:maximumPoolSize最大可至Integer.MAX_VALUE,是高度可伸缩的线程池，
+如果达到这个上限，相信没有任何服务器能够继续工作，肯定会抛出OOM异常。
+keepAliveTime默认为60秒，工作线程处于空闲状态则回收工作线程。
+如果任务数增加，再次创建出新线程处理任务。
+```
+public static ExecutorService newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                      60L, TimeUnit.SECONDS,
+                                      new SynchronousQueue<Runnable>());
+    }
+```
+3. Executors.newScheduledThreadPool:线程数最大至Integer.MAX_VALUE，
+与cachedThreadPool相同，存在OOM的风险。它是ScheduledExecutorService接口家族的实现类，
+支持定时及周期性执行任务。相比Timer，ScheduledExecutorService更安全，功能更强大，
+与CachedThreadPool的区别就是不回收工作线程。
 ``` 
 public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
                                                      long initialDelay,
@@ -42,6 +71,23 @@ public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
 第四个参数 TimeUnit为第二个和第三个参数的时间单位
 特别注意：
 运行期间command抛出异常将导致整个周期线程中断，使用过程中需要特别注意这一点
+4. Executors.newFixedThreadPool 入参即是固定线程数，既是核心线程数，又是最大线程数，不存在空闲线程，所以keepAliveTime等于0。
+```
+public static ExecutorService newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                                      0L, TimeUnit.MILLISECONDS,
+                                      new LinkedBlockingQueue<Runnable>());
+    }
+```
+5. Executors.newSingleThreadExecutor 创建一个单线程的线程池，相当于单线程串行执行所有任务，保证任务的提交顺序依次执行。
+```
+public static ExecutorService newSingleThreadExecutor() {
+        return new FinalizableDelegatedExecutorService
+            (new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>()));
+    }
+```
 
 ### 三、ThreadPoolExecutor类中的execute() 方法
 通过submit()方法也可以提交任务，submit方法最终也是调用execute()方法
