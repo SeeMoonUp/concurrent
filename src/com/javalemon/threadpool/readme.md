@@ -2,10 +2,13 @@
 ## 两种创建方式
 ### 一、直接实现ThreadPoolExecutor
 ```
-new ThreadPoolExecutor(nThreads, nThreads,
-                              0L, TimeUnit.MILLISECONDS,
-                              new LinkedBlockingQueue<Runnable>(),
-                              threadFactory);
+new ThreadPoolExecutor(int corePoolSize,
+                     int maximumPoolSize,
+                     long keepAliveTime,
+                     TimeUnit unit,
+                     BlockingQueue<Runnable> workQueue,
+                     ThreadFactory threadFactory,
+                     RejectedExecutionHandler handler);
 ```
 #### 参数的含义
 1. 第一个参数corePoolSize 表示常驻核心线程数。
@@ -21,8 +24,10 @@ new ThreadPoolExecutor(nThreads, nThreads,
 但是当ThreadPoolExecutor的allowCoreThreadTimeOut变量设置为true时，核心线程超时后也会被回收。
 4. 第四个参数： TimeUnit表示时间单位。keepAliveTime的时间单位通常是TimeUnit.SECONDS。
 5. 第五个参数： workQueue表示缓存队列。当请求的线程数大于corePoolSize时，线程进入BlockingQueue阻塞队列。
-6. 第六个参数： threadFactory表示线程工厂。
-7. 第七个参数： handler表示执行拒绝策略的对象。
+LinkedBlockingQueue是单向链表，使用锁来控制入队和出队的原子性，两个锁分别控制元素的添加和获取，是一个生产消费模型队列。
+6. 第六个参数： threadFactory表示线程工厂。它用来生产一组相同任务的线程。线程池的命名是通过这个factory增加组名前缀来实现的。
+在虚拟机栈分析是，就可以知道线程任务是由哪个线程工厂产生的。
+7. 第七个参数： handler表示执行拒绝策略的对象。当第五个参数workQueue的任务缓存区达到上限后，并且活动线程数大于maximumPoolSize的时候，线程池通过该策略处理请求，这是一种简单的限流保护。
 ### 二、使用Executors创建5中线程池
 #### 周期线程池
 ``` 
